@@ -1,67 +1,83 @@
-# jay-farms
+# JAY FARMS Safety System
 
-This template should help get you started developing with Vue 3 in Vite.
+An independent QA automation practice project inspired by a publicly demonstrated agricultural equipment-management workflow. This fictional application is not affiliated with, endorsed by, or presented as an official Safe Ag Systems product.
 
-## Recommended IDE Setup
+## Project Purpose
 
-[VS Code](https://code.visualstudio.com/) + [Vue (Official)](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
+This deliberately small single-page application demonstrates clean Vue and TypeScript implementation alongside purposeful Playwright test design. The focus is quality engineering—not recreating an entire agricultural SaaS platform.
 
-## Recommended Browser Setup
+## Why This Workflow Was Selected
 
-- Chromium-based browsers (Chrome, Edge, Brave, etc.):
-  - [Vue.js devtools](https://chromewebstore.google.com/detail/vuejs-devtools/nhdogjmejiglipccpnnnanhbledajbpd)
-  - [Turn on Custom Object Formatter in Chrome DevTools](http://bit.ly/object-formatters)
-- Firefox:
-  - [Vue.js devtools](https://addons.mozilla.org/en-US/firefox/addon/vue-js-devtools/)
-  - [Turn on Custom Object Formatter in Firefox DevTools](https://fxdx.dev/firefox-devtools-custom-object-formatters/)
+Equipment inventory provides several connected quality risks in a compact workflow:
 
-## Type Support for `.vue` Imports in TS
+- case-insensitive, partial, and whitespace-tolerant searching;
+- independent and combined filtering;
+- individual and bulk selection state;
+- integrity of selections when the visible result set changes;
+- deterministic overdue, future, and unspecified maintenance states.
 
-TypeScript cannot handle type information for `.vue` imports by default, so we replace the `tsc` CLI with `vue-tsc` for type checking. In editors, we need [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) to make the TypeScript language service aware of `.vue` types.
+## Testing Approach
 
-## Customize configuration
+The 15 Playwright scenarios cover happy paths, negative and edge conditions, reactive state changes, filter combinations, selection integrity, and maintenance business rules. Tests use role, label, and visible-text selectors so they exercise the interface in the same way a user or assistive technology encounters it.
 
-See [Vite Configuration Reference](https://vite.dev/config/).
+The important bulk-selection scenario first narrows the inventory to three tractor records, selects all visible equipment, then removes the filter and proves that the six previously hidden records remain unselected.
 
-## Project Setup
+## Automation Decisions
+
+Search, filtering, selection, and maintenance-state calculation are deterministic and repeatable. They are strong E2E automation candidates because regressions can be asserted through stable business outcomes rather than implementation details.
+
+Maintenance calculations use the fixed application reference date `2026-08-17`, avoiding failures caused by the test machine's clock. Subjective visual quality, readability, and broader usability would still benefit from manual exploratory testing across viewports and assistive technologies.
+
+## Tech Stack
+
+- Vue 3
+- TypeScript
+- Vite
+- Tailwind CSS
+- Playwright
+
+## Running Locally
+
+The repository uses pnpm.
 
 ```sh
 pnpm install
-```
-
-### Compile and Hot-Reload for Development
-
-```sh
 pnpm dev
 ```
 
-### Type-Check, Compile and Minify for Production
+Then open `http://localhost:5173`.
+
+## Running Tests
+
+Install Playwright browsers once after installing dependencies:
 
 ```sh
-pnpm build
+pnpm exec playwright install
 ```
 
-### Run End-to-End Tests with [Playwright](https://playwright.dev)
+Run the complete cross-browser suite:
 
 ```sh
-# Install browsers for the first run
-npx playwright install
-
-# When testing on CI, must build the project first
-pnpm build
-
-# Runs the end-to-end tests
 pnpm test:e2e
-# Runs the tests only on Chromium
-pnpm test:e2e --project=chromium
-# Runs the tests of a specific file
-pnpm test:e2e tests/example.spec.ts
-# Runs the tests in debug mode
-pnpm test:e2e --debug
 ```
 
-### Lint with [ESLint](https://eslint.org/)
+Useful targeted commands:
 
 ```sh
-pnpm lint
+pnpm exec playwright test tests/selection.spec.ts
+pnpm exec playwright test --project=chromium
+pnpm exec playwright test --ui
 ```
+
+## Quality Checks
+
+```sh
+pnpm type-check
+pnpm lint
+pnpm format
+pnpm build
+```
+
+## Deliberate Scope
+
+The inactive navigation and maintenance tab are visual context only. The QR action stops at an accessible confirmation dialog; no QR image or print job is produced. Data is local and resets on refresh, with no authentication, backend, router, or external state library.
