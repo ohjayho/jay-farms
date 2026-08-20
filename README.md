@@ -1,5 +1,7 @@
 # JAY FARMS Safety System
 
+![JAY FARMS equipment inventory](./docs/screenshot.png)
+
 A small QA automation practice project built to learn Playwright through a simplified agricultural equipment-management workflow.
 
 The project was inspired by a publicly demonstrated farm equipment-management system and is not affiliated with or presented as an official product of that company.
