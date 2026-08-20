@@ -1,32 +1,46 @@
 # JAY FARMS Safety System
 
-An independent QA automation practice project inspired by a publicly demonstrated agricultural equipment-management workflow. This fictional application is not affiliated with, endorsed by, or presented as an official Safe Ag Systems product.
+A small QA automation practice project built to learn Playwright through a simplified agricultural equipment-management workflow.
 
-## Project Purpose
+The project was inspired by a publicly demonstrated farm equipment-management system and is not affiliated with or presented as an official product of that company.
 
-This deliberately small single-page application demonstrates clean Vue and TypeScript implementation alongside purposeful Playwright test design. The focus is quality engineering—not recreating an entire agricultural SaaS platform.
+## Features Under Test
 
-## Why This Workflow Was Selected
+- Search
+- Filtering
+- Maintenance status
+- Equipment selection
 
-Equipment inventory provides several connected quality risks in a compact workflow:
+Only the workflows listed above are implemented and tested. Other UI elements are included as visual mockups only.
 
-- case-insensitive, partial, and whitespace-tolerant searching;
-- independent and combined filtering;
-- individual and bulk selection state;
-- integrity of selections when the visible result set changes;
-- deterministic overdue, future, and unspecified maintenance states.
+## Test Cases
 
-## Testing Approach
+### Filter
 
-The 15 Playwright scenarios cover happy paths, negative and edge conditions, reactive state changes, filter combinations, selection integrity, and maintenance business rules. Tests use role, label, and visible-text selectors so they exercise the interface in the same way a user or assistive technology encounters it.
+- Type filter limits results
+- Category filter limits results
+- Status filter limits results
+- Multiple filters use AND logic
+- Search and filters work together
 
-The important bulk-selection scenario first narrows the inventory to three tractor records, selects all visible equipment, then removes the filter and proves that the six previously hidden records remain unselected.
+### Maintenance
 
-## Automation Decisions
+- Renders overdue, future, and unspecified maintenance states against the fixed `2026-08-17` reference date
 
-Search, filtering, selection, and maintenance-state calculation are deterministic and repeatable. They are strong E2E automation candidates because regressions can be asserted through stable business outcomes rather than implementation details.
+### Search
 
-Maintenance calculations use the fixed application reference date `2026-08-17`, avoiding failures caused by the test machine's clock. Subjective visual quality, readability, and broader usability would still benefit from manual exploratory testing across viewports and assistive technologies.
+- Searching for `tractor` displays all matching tractors
+- Search is case-insensitive
+- Search supports partial equipment names
+- Search trims leading and trailing whitespace
+- A nonexistent keyword produces an empty state
+
+### Selection
+
+- Selecting one item shows the singular count and print action
+- Selecting, deselecting, and cancelling keep the selected count accurate
+- Print QR Code opens an accessible confirmation dialog
+- Select All affects only the three currently visible filtered records
 
 ## Tech Stack
 
@@ -38,46 +52,41 @@ Maintenance calculations use the fixed application reference date `2026-08-17`, 
 
 ## Running Locally
 
-The repository uses pnpm.
-
 ```sh
 pnpm install
 pnpm dev
 ```
 
-Then open `http://localhost:5173`.
+Open `http://localhost:5173`.
 
 ## Running Tests
 
-Install Playwright browsers once after installing dependencies:
+Install Playwright browsers:
 
 ```sh
 pnpm exec playwright install
 ```
 
-Run the complete cross-browser suite:
+Run the full E2E test suite:
 
 ```sh
 pnpm test:e2e
 ```
 
-Useful targeted commands:
+Run a specific test file:
 
 ```sh
 pnpm exec playwright test tests/selection.spec.ts
-pnpm exec playwright test --project=chromium
-pnpm exec playwright test --ui
 ```
 
-## Quality Checks
+Run in Chromium only:
 
 ```sh
-pnpm type-check
-pnpm lint
-pnpm format
-pnpm build
+pnpm exec playwright test --project=chromium
 ```
 
-## Deliberate Scope
+Open Playwright UI mode:
 
-The inactive navigation and maintenance tab are visual context only. The QR action stops at an accessible confirmation dialog; no QR image or print job is produced. Data is local and resets on refresh, with no authentication, backend, router, or external state library.
+```sh
+pnpm exec playwright test --ui
+```
